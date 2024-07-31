@@ -1,0 +1,81 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  posts     Post[]
+  bookings  Booking[]
+}
+
+model Package {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bookings    Booking[]
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  price       Int
+  images      Json
+  address     String
+  city        String
+  latitude    Float
+  longitude   Float
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        Users    @relation(fields: [userId], references: [id])
+  bookings    Booking[]
+}
+
+model Booking {
+  id             Int      @id @default(autoincrement())
+  bookingCode    String   @unique
+  name           String
+  phone          String
+  status         String   @default("Pending")
+  visitDate      DateTime
+  numberOfPeople Int
+  additionalNotes String?
+  totalDays      Int
+  bookingDate     DateTime @default(now())
+  totalPrice     Float
+  userId         Int?
+  postId         Int?
+  packageId      Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           Users?   @relation(fields: [userId], references: [id])
+  post           Post?    @relation(fields: [postId], references: [id])
+  package        Package? @relation(fields: [packageId], references: [id])
+}
+
+model Session {
+  sid         String   @id
+  expires     DateTime?
+  data        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
