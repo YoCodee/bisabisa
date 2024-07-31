@@ -1,6 +1,11 @@
 [build]
   functions = "netlify-functions"
   node_bundler = "esbuild"
+  command = "npm run prisma-generate && npm run build"
 
 [functions]
   directory = "netlify-functions"
+
+  [build.environment]
+  DATABASE_URL = "mysql://root:@localhost:3306/fofo_db"
+
